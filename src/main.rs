@@ -1,10 +1,13 @@
 use iced::{
+    Border, Color,
     alignment::Horizontal,
+    border::Radius,
     widget::{Column, Row, Text, button, column, row, text, text_input},
 };
 
 mod puzzle_creator;
 use puzzle_creator::{create_puzzle, generate_complete_grid};
+use rfd::MessageDialog;
 
 const CELLS_SIZE: f32 = 40.0;
 
@@ -16,6 +19,7 @@ fn main() -> iced::Result {
 enum Message {
     Update(u8, u8, String),
     NewGame,
+    Check,
 }
 
 struct MyApp {
@@ -29,6 +33,7 @@ struct MyApp {
        index 3 is the right line
     */
     clues: Vec<Vec<u8>>,
+    errors: Vec<(u8, u8)>,
 }
 
 impl MyApp {
@@ -85,6 +90,7 @@ impl MyApp {
             row_comp = row_comp.push(left_clue_comp);
 
             for col_index in 0..self.size {
+                let is_error = self.errors.contains(&(row_index, col_index));
                 let cell = text_input(
                     "",
                     self.values[row_index as usize][col_index as usize].as_str(),
@@ -92,6 +98,23 @@ impl MyApp {
                 .width(CELLS_SIZE)
                 .size(CELLS_SIZE * 0.8)
                 .align_x(Horizontal::Center)
+                .style(move |_, _| text_input::Style {
+                    background: iced::Background::Color(Color::TRANSPARENT),
+
+                    border: Border {
+                        color: Color::BLACK,
+                        width: 1.0,
+                        radius: Radius::new(0),
+                    },
+                    icon: Color::TRANSPARENT,
+                    placeholder: Color::TRANSPARENT,
+                    selection: Color::TRANSPARENT,
+                    value: if is_error {
+                        Color::from_rgb(1.0, 0.0, 0.0)
+                    } else {
+                        Color::BLACK
+                    },
+                })
                 .on_input(move |value| Message::Update(row_index, col_index, value));
                 row_comp = row_comp.push(cell);
             }
@@ -114,7 +137,59 @@ impl MyApp {
 
     fn build_toolbar_comp(&self) -> Row<'_, Message> {
         let new_game_button = button("New game").on_press(Message::NewGame);
-        row![new_game_button]
+        let check_button = button("Check").on_press(Message::Check);
+
+        row![new_game_button, check_button].spacing(5.0)
+    }
+
+    fn check_user_answer(&mut self) {
+        self.errors = Vec::new();
+
+        if !self.check_grid_filled() {
+            MessageDialog::new()
+                .set_description("You must fill all cells first.")
+                .set_level(rfd::MessageLevel::Error)
+                .show();
+            return;
+        }
+
+        let errors = self.check_errors();
+        self.errors = errors;
+
+        if self.errors.is_empty() {
+            MessageDialog::new()
+                .set_description("You win !")
+                .set_level(rfd::MessageLevel::Info)
+                .show();
+        }
+    }
+
+    fn check_grid_filled(&self) -> bool {
+        for row_index in 0..self.size {
+            for col_index in 0..self.size {
+                if self.values[row_index as usize][col_index as usize].is_empty() {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    fn check_errors(&self) -> Vec<(u8, u8)> {
+        let mut errors = Vec::new();
+        for row_index in 0..self.size {
+            for col_index in 0..self.size {
+                let value = self.values[row_index as usize][col_index as usize]
+                    .parse::<u8>()
+                    .unwrap();
+                let answer = self.answer[row_index as usize][col_index as usize];
+
+                if value != answer {
+                    errors.push((row_index, col_index));
+                }
+            }
+        }
+        errors
     }
 }
 
@@ -153,6 +228,7 @@ impl Default for MyApp {
             values: dyn_array,
             clues: dyn_clues,
             answer: dyn_answer,
+            errors: Vec::new(),
         }
     }
 }
@@ -180,6 +256,7 @@ impl MyApp {
                         break;
                     }
                 }
+
                 let orig_clues = create_puzzle(&grid, self.size as usize);
                 let mut clues = Vec::new();
 
@@ -210,6 +287,9 @@ impl MyApp {
                 self.clear_cells();
                 self.clues = clues;
                 self.answer = grid;
+            }
+            Message::Check => {
+                self.check_user_answer();
             }
         }
     }
