@@ -28,10 +28,17 @@ struct MyApp {
 
 impl MyApp {
     fn build_clue_component(&'_ self, clue: u8) -> Text<'_> {
-        text(format!("{}", clue))
-            .width(CELLS_SIZE)
-            .size(CELLS_SIZE)
-            .align_x(Horizontal::Center)
+        text(format!(
+            "{}",
+            if clue != 0 {
+                clue.to_string()
+            } else {
+                String::new()
+            }
+        ))
+        .width(CELLS_SIZE)
+        .size(CELLS_SIZE)
+        .align_x(Horizontal::Center)
     }
 
     fn build_empty_clue_component(&'_ self) -> Text<'_> {
@@ -58,7 +65,7 @@ impl Default for MyApp {
         for _row in 0..4 {
             let mut col_array = Vec::new();
             for _col in 0..default_size {
-                col_array.push(5u8);
+                col_array.push(0);
             }
             dyn_clues.push(col_array);
         }
