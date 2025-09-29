@@ -114,7 +114,7 @@ impl MyApp {
                     self.values[row_index as usize][col_index as usize].as_str(),
                 )
                 .width(CELLS_SIZE)
-                .size(CELLS_SIZE)
+                .size(CELLS_SIZE * 0.8)
                 .align_x(Horizontal::Center)
                 .on_input(move |value| Message::Update(row_index, col_index, value));
                 row_comp = row_comp.push(cell);
