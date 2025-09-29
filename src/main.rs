@@ -53,6 +53,18 @@ impl MyApp {
             .align_x(Horizontal::Center)
     }
 
+    fn clear_cells(&'_ mut self) {
+        let mut dyn_array = Vec::new();
+        for _row in 0..self.size {
+            let mut col_array = Vec::new();
+            for _col in 0..self.size {
+                col_array.push("".to_string());
+            }
+            dyn_array.push(col_array);
+        }
+        self.values = dyn_array;
+    }
+
     fn build_grid_comp(&'_ self) -> Column<'_, Message> {
         let mut col_comp = Column::new();
 
@@ -128,7 +140,7 @@ impl Default for MyApp {
         }
 
         let mut dyn_clues = Vec::new();
-        for _row in 0..4 {
+        for _row in 0..default_size {
             let mut col_array = Vec::new();
             for _col in 0..default_size {
                 col_array.push(0);
@@ -195,6 +207,7 @@ impl MyApp {
                 }
                 clues.push(right_clues);
 
+                self.clear_cells();
                 self.clues = clues;
                 self.answer = grid;
             }
