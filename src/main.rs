@@ -1,7 +1,10 @@
 use iced::{
     alignment::Horizontal,
-    widget::{Column, Row, Text, text, text_input},
+    widget::{Column, Row, Text, button, column, row, text, text_input},
 };
+
+mod puzzle_creator;
+use puzzle_creator::{create_puzzle, generate_complete_grid};
 
 const CELLS_SIZE: f32 = 40.0;
 
@@ -12,11 +15,13 @@ fn main() -> iced::Result {
 #[derive(Debug, Clone)]
 enum Message {
     Update(u8, u8, String),
+    NewGame,
 }
 
 struct MyApp {
     size: u8,
     values: Vec<Vec<String>>,
+    answer: Vec<Vec<u8>>,
     /*
        index 0 is the top line
        index 1 is the bottom line
@@ -47,56 +52,8 @@ impl MyApp {
             .size(CELLS_SIZE)
             .align_x(Horizontal::Center)
     }
-}
 
-impl Default for MyApp {
-    fn default() -> Self {
-        let default_size = 4;
-        let mut dyn_array = Vec::new();
-        for _row in 0..default_size {
-            let mut col_array = Vec::new();
-            for _col in 0..default_size {
-                col_array.push("".to_string());
-            }
-            dyn_array.push(col_array);
-        }
-
-        let mut dyn_clues = Vec::new();
-        for _row in 0..4 {
-            let mut col_array = Vec::new();
-            for _col in 0..default_size {
-                col_array.push(0);
-            }
-            dyn_clues.push(col_array);
-        }
-
-        Self {
-            size: default_size,
-            values: dyn_array,
-            clues: dyn_clues,
-        }
-    }
-}
-
-impl MyApp {
-    fn update(&mut self, message: Message) {
-        match message {
-            Message::Update(row, col, value) => {
-                if let Ok(num_value) = value.parse::<u8>()
-                    && num_value > 0
-                    && num_value < 10
-                {
-                    self.values[row as usize][col as usize] = value;
-                    return;
-                }
-                if value.is_empty() {
-                    self.values[row as usize][col as usize] = value;
-                }
-            }
-        }
-    }
-
-    fn view(&'_ self) -> iced::Element<'_, Message> {
+    fn build_grid_comp(&'_ self) -> Column<'_, Message> {
         let mut col_comp = Column::new();
 
         let mut top_clues = Row::new();
@@ -140,6 +97,114 @@ impl MyApp {
         }
         col_comp = col_comp.push(bottom_clues);
 
-        col_comp.into()
+        col_comp
+    }
+
+    fn build_toolbar_comp(&self) -> Row<'_, Message> {
+        let new_game_button = button("New game").on_press(Message::NewGame);
+        row![new_game_button]
+    }
+}
+
+impl Default for MyApp {
+    fn default() -> Self {
+        let default_size = 4;
+        let mut dyn_array = Vec::new();
+        for _row in 0..default_size {
+            let mut col_array = Vec::new();
+            for _col in 0..default_size {
+                col_array.push("".to_string());
+            }
+            dyn_array.push(col_array);
+        }
+
+        let mut dyn_answer = Vec::new();
+        for _row in 0..default_size {
+            let mut col_answer = Vec::new();
+            for _col in 0..default_size {
+                col_answer.push(0u8);
+            }
+            dyn_answer.push(col_answer);
+        }
+
+        let mut dyn_clues = Vec::new();
+        for _row in 0..4 {
+            let mut col_array = Vec::new();
+            for _col in 0..default_size {
+                col_array.push(0);
+            }
+            dyn_clues.push(col_array);
+        }
+
+        Self {
+            size: default_size,
+            values: dyn_array,
+            clues: dyn_clues,
+            answer: dyn_answer,
+        }
+    }
+}
+
+impl MyApp {
+    fn update(&mut self, message: Message) {
+        match message {
+            Message::Update(row, col, value) => {
+                if let Ok(num_value) = value.parse::<u8>()
+                    && num_value > 0
+                    && num_value < 10
+                {
+                    self.values[row as usize][col as usize] = value;
+                    return;
+                }
+                if value.is_empty() {
+                    self.values[row as usize][col as usize] = value;
+                }
+            }
+            Message::NewGame => {
+                let grid: Vec<Vec<u8>>;
+                loop {
+                    if let Some(inner_grid) = generate_complete_grid(self.size as usize) {
+                        grid = inner_grid;
+                        break;
+                    }
+                }
+                let orig_clues = create_puzzle(&grid, self.size as usize);
+                let mut clues = Vec::new();
+
+                let mut top_clues = Vec::new();
+                for col in 0..self.size {
+                    top_clues.push(orig_clues[col as usize]);
+                }
+                clues.push(top_clues);
+
+                let mut bottom_clues = Vec::new();
+                for col in 0..self.size {
+                    bottom_clues.push(orig_clues[(col + 2 * self.size) as usize]);
+                }
+                clues.push(bottom_clues);
+
+                let mut left_clues = Vec::new();
+                for col in 0..self.size {
+                    left_clues.push(orig_clues[(col + 3 * self.size) as usize]);
+                }
+                clues.push(left_clues);
+
+                let mut right_clues = Vec::new();
+                for col in 0..self.size {
+                    right_clues.push(orig_clues[(col + self.size) as usize]);
+                }
+                clues.push(right_clues);
+
+                self.clues = clues;
+                self.answer = grid;
+            }
+        }
+    }
+
+    fn view(&'_ self) -> iced::Element<'_, Message> {
+        let grid = self.build_grid_comp();
+        let tool_bar = self.build_toolbar_comp();
+
+        column![tool_bar, grid].into()
     }
 }
