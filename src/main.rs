@@ -33,6 +33,7 @@ enum Message {
     Update(u8, u8, String),
     NewGame,
     Check,
+    Rules,
 }
 
 struct MyApp {
@@ -149,12 +150,14 @@ impl MyApp {
     }
 
     fn build_toolbar_comp(&self) -> Row<'_, Message> {
-        let new_game_button = button(text(t!("ui.toolbar.new_game", , locale = &user_locale())))
+        let new_game_button = button(text(t!("ui.toolbar.new_game", locale = &user_locale())))
             .on_press(Message::NewGame);
         let check_button =
             button(text(t!("ui.toolbar.check", locale = &user_locale()))).on_press(Message::Check);
+        let rules_button =
+            button(text(t!("ui.toolbar.rules", locale = &user_locale()))).on_press(Message::Rules);
 
-        row![new_game_button, check_button].spacing(5.0)
+        row![new_game_button, check_button, rules_button].spacing(5.0)
     }
 
     fn check_user_answer(&mut self) {
@@ -205,6 +208,13 @@ impl MyApp {
             }
         }
         errors
+    }
+
+    fn show_rules(&self) {
+        MessageDialog::new()
+            .set_description(t!("ui.messages.rules", locale = &user_locale()))
+            .set_level(rfd::MessageLevel::Info)
+            .show();
     }
 }
 
@@ -303,9 +313,8 @@ impl MyApp {
                 self.clues = clues;
                 self.answer = grid;
             }
-            Message::Check => {
-                self.check_user_answer();
-            }
+            Message::Check => self.check_user_answer(),
+            Message::Rules => self.show_rules(),
         }
     }
 

@@ -2,5 +2,7 @@ _version: 1
 
 ui.toolbar.new_game: "Nueva partida"
 ui.toolbar.check: "Comprobar"
+ui.toolbar.rules: "Reglas"
 ui.messages.empty_cells_error: "Primero debes rellenar todas las casillas."
 ui.messages.win: "¡Has ganado!"
+ui.messages.rules: "La cuadrícula puede almacenar la altura —en pisos— de algunos edificios: tu objetivo es adivinarlas.\n\nTodos los edificios tienen un número de pisos que va de 1 a N, donde N es el tamaño en casillas de la cuadrícula.\n\nEn una sola fila o columna, no puede haber dos o más edificios con el mismo valor.\n\nLas pistas alrededor de la cuadrícula te indican cuántos edificios puedes ver desde el punto de vista de un usuario sentado en el lugar de la pista.\n(Si un edificio es más alto que otro detrás de él, el edificio que está detrás no se contará como visible.)"
