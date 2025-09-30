@@ -1,0 +1,7 @@
+target/
+.git/
+.cargo/
+.vscode/
+linux_release/
+squashfs-root/
+*.AppImage

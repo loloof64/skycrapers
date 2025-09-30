@@ -3285,7 +3285,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "skycrapers"
+name = "skyscrapers"
 version = "0.1.0"
 dependencies = [
  "iced",
