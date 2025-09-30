@@ -1,0 +1,6 @@
+_version: 1
+
+ui.toolbar.new_game: "Nueva partida"
+ui.toolbar.check: "Comprobar"
+ui.messages.empty_cells_error: "Primero debes rellenar todas las casillas."
+ui.messages.win: "¡Has ganado!"

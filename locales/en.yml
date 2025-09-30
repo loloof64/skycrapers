@@ -1,0 +1,6 @@
+_version: 1
+
+ui.toolbar.new_game: "New game"
+ui.toolbar.check: "Check"
+ui.messages.empty_cells_error: "You must fill all cells first."
+ui.messages.win: "You win !"

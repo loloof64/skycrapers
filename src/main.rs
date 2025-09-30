@@ -9,6 +9,19 @@ mod puzzle_creator;
 use puzzle_creator::{create_puzzle, generate_complete_grid};
 use rfd::MessageDialog;
 
+#[macro_use]
+extern crate rust_i18n;
+i18n!("locales", fallback = "en");
+use rust_i18n::t;
+
+use sys_locale::get_locale;
+
+fn user_locale() -> String {
+    let mut locale = get_locale().unwrap_or(String::from("en_EN"));
+    let _ = locale.split_off(2);
+    locale
+}
+
 const CELLS_SIZE: f32 = 40.0;
 
 fn main() -> iced::Result {
@@ -136,8 +149,10 @@ impl MyApp {
     }
 
     fn build_toolbar_comp(&self) -> Row<'_, Message> {
-        let new_game_button = button("New game").on_press(Message::NewGame);
-        let check_button = button("Check").on_press(Message::Check);
+        let new_game_button = button(text(t!("ui.toolbar.new_game", , locale = &user_locale())))
+            .on_press(Message::NewGame);
+        let check_button =
+            button(text(t!("ui.toolbar.check", locale = &user_locale()))).on_press(Message::Check);
 
         row![new_game_button, check_button].spacing(5.0)
     }
@@ -147,7 +162,7 @@ impl MyApp {
 
         if !self.check_grid_filled() {
             MessageDialog::new()
-                .set_description("You must fill all cells first.")
+                .set_description(t!("ui.messages.empty_cells_error", locale = &user_locale()))
                 .set_level(rfd::MessageLevel::Error)
                 .show();
             return;
@@ -158,7 +173,7 @@ impl MyApp {
 
         if self.errors.is_empty() {
             MessageDialog::new()
-                .set_description("You win !")
+                .set_description(t!("ui.messages.win", locale = &user_locale()))
                 .set_level(rfd::MessageLevel::Info)
                 .show();
         }
