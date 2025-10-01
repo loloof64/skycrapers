@@ -1,0 +1,8 @@
+_version: 1
+
+ui.toolbar.new_game: "Nouvelle partie"
+ui.toolbar.check: "Vérifier"
+ui.toolbar.rules: "Règles"
+ui.messages.empty_cells_error: "Toutes les cases doivent être remplies d'abord."
+ui.messages.win: "Vous avez gagné !"
+ui.messages.rules: "La grille peut contenir la hauteur -en étages- de certains immeubles : votre objectif est de les deviner.\n\nTous les immeubles ont un nombre d'étages allant de 1 à N, où N est la taille en cases de la grille.\n\nDans une même ligne ou colonne, il ne peut pas y avoir deux immeubles avec la même valeur.\n\nLes indices autour de la grille indiquent combien d'immeubles sont visibles depuis le point de vue d'un utilisateur placé à l'emplacement de l'indice.\n(Ainsi, si un immeuble est plus haut qu'un immeuble derrière lui, celui qui est derrière ne sera pas compté comme visible.)"

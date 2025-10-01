@@ -1,0 +1,8 @@
+_version: 1
+
+ui.toolbar.new_game: "New game"
+ui.toolbar.check: "Check"
+ui.toolbar.rules: "Rules"
+ui.messages.empty_cells_error: "You must fill all cells first."
+ui.messages.win: "You win !"
+ui.messages.rules: "The grid can store the height -in floors- of some buildings : and your goal is to guess them.\n\nAll buildings have a number of floors going from 1 to N, where N is the size in squares of the grid.\n\nIn a single line or a single column, there can't be two ore more buildings with the same value.\n\nThe clues around the grid tells you how many buildings you can see from the point of view of a user sitting at the clue's place.\n(So that if a building is higher than a building behind it, the building that's behind won't be count as visible.)"
