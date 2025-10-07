@@ -1,5 +1,6 @@
 use iced::{
-    Border, Color,
+    Alignment::Center,
+    Border, Color, Length,
     alignment::Horizontal,
     border::Radius,
     widget::{Column, Row, Text, button, column, row, text, text_input},
@@ -322,6 +323,11 @@ impl MyApp {
         let grid = self.build_grid_comp();
         let tool_bar = self.build_toolbar_comp();
 
-        column![tool_bar, grid].into()
+        column![tool_bar, grid]
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .padding(20.0)
+            .align_x(Center)
+            .into()
     }
 }

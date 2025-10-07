@@ -1,7 +1,15 @@
-target/
-.git/
-.cargo/
-.vscode/
-linux_release/
+# Ignore AppImage build artifacts and intermediate folders
+
+skyscrapers.AppDir/
+_.AppImage
+_.AppDir
 squashfs-root/
-*.AppImage
+
+# Ignore Rust build files
+
+target/
+
+# Misc
+
+.git/
+.vscode/

@@ -1,5 +1,0 @@
-/target
-linux_release
-.vscode/
-squashfs-root/
-*.AppImage
