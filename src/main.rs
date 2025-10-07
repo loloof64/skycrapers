@@ -18,9 +18,9 @@ use rust_i18n::t;
 use sys_locale::get_locale;
 
 fn user_locale() -> String {
-    let mut locale = get_locale().unwrap_or(String::from("en_EN"));
-    let _ = locale.split_off(2);
-    locale
+    let locale_full = get_locale().unwrap_or(String::from("en_EN"));
+    let lang_code = locale_full.get(0..2).unwrap_or("en");
+    lang_code.to_string()
 }
 
 const CELLS_SIZE: f32 = 40.0;
